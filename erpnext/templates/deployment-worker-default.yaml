@@ -61,6 +61,10 @@ spec:
             mountPath: /home/frappe/frappe-bench/sites
           - name: logs
             mountPath: /home/frappe/frappe-bench/logs
+          {{- if .Values.persistentApps.enabled }}
+          - name: apps
+            mountPath: {{ .Values.persistentApps.mountPath }}
+          {{- end }}
       {{- if .Values.worker.default.sidecars }}
         {{- toYaml .Values.worker.default.sidecars | nindent 8 }}
       {{- end }}
@@ -89,6 +93,15 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- if .Values.persistentApps.enabled }}
+        - name: apps
+          persistentVolumeClaim:
+            {{- if .Values.persistentApps.existingClaim }}
+            claimName: {{ .Values.persistentApps.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}-apps
+            {{- end }}
+        {{- end }}
       {{- with .Values.worker.default.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

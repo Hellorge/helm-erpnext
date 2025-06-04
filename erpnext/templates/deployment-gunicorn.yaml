@@ -44,6 +44,10 @@ spec:
             mountPath: /home/frappe/frappe-bench/sites
           - name: logs
             mountPath: /home/frappe/frappe-bench/logs
+          {{- if .Values.persistentApps.enabled }}
+          - name: apps
+            mountPath: {{ .Values.persistentApps.mountPath }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.worker.gunicorn.service.port }}
@@ -82,6 +86,15 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- if .Values.persistentApps.enabled }}
+        - name: apps
+          persistentVolumeClaim:
+            {{- if .Values.persistentApps.existingClaim }}
+            claimName: {{ .Values.persistentApps.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}-apps
+            {{- end }}
+        {{- end }}
       {{- with .Values.worker.gunicorn.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

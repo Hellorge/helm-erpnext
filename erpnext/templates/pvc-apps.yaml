@@ -1,0 +1,20 @@
+{{- if .Values.persistentApps.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "erpnext.fullname" . }}-apps
+  labels:
+    app.kubernetes.io/name: {{ include "erpnext.name" . }}
+    helm.sh/chart: {{ include "erpnext.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.persistentApps.size | quote }}
+  {{- if .Values.persistentApps.storageClass }}
+  storageClassName: {{ .Values.persistentApps.storageClass }}
+  {{- end }}
+{{- end }}
