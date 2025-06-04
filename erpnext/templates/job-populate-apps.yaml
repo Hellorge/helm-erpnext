@@ -37,7 +37,7 @@ spec:
       volumes:
         - name: apps
           persistentVolumeClaim:
-            claimName: {{ .Values.persistentApps.existingClaim | default (printf "%s-erpnext-apps" (include "erpnext.fullname" .)) }}
+            claimName: {{ .Values.persistentApps.existingClaim | default (printf "%s-apps" (include "erpnext.fullname" .)) }}
       {{- with .Values.persistentApps.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
