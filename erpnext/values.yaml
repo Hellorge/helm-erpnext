@@ -454,7 +454,7 @@ postgresql:
         postgresql: 5432
 
 persistentApps:
-  {{- /* Job to initialize the apps volume if it’s not already populated */ -}}
+  # {{- /* Job to initialize the apps volume if it’s not already populated */ -}}
   enabled: true
   storageClass: ""  # Uses default if empty
   size: 5Gi
