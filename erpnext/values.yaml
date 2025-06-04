@@ -454,9 +454,20 @@ postgresql:
         postgresql: 5432
 
 persistentApps:
+  {{- /* Job to initialize the apps volume if it’s not already populated */ -}}
   enabled: true
   storageClass: ""  # Uses default if empty
   size: 5Gi
   existingClaim: ""
   # Mount path for apps
   mountPath: /home/frappe/frappe-bench/apps
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
