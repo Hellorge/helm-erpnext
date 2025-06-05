@@ -22,6 +22,7 @@ spec:
               if [ ! -d /mnt/apps/frappe ]; then
                 echo "Copying apps to /mnt/apps"
                 cp -r /home/frappe/frappe-bench/apps/* /mnt/apps/
+                cp -r /home/frappe/frappe-bench/env/* /mnt/env/
                 echo -e "frappe\nerpnext" > /mnt/apps/apps.txt
                 echo "App volume initialized."
               else
@@ -30,6 +31,9 @@ spec:
           volumeMounts:
             - name: apps
               mountPath: /mnt/apps
+          volumeMounts:
+            - name: env
+              mountPath: /mnt/env
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           resources:
@@ -38,6 +42,9 @@ spec:
         - name: apps
           persistentVolumeClaim:
             claimName: {{ .Values.persistentApps.existingClaim | default (printf "%s-apps" (include "erpnext.fullname" .)) }}
+        - name: env
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistentEnv.existingClaim | default (printf "%s-env" (include "erpnext.fullname" .)) }}
       {{- with .Values.persistentApps.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
