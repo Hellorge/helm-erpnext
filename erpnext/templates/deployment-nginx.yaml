@@ -78,6 +78,14 @@ spec:
           - name: nginx-config
             mountPath: /etc/nginx/conf.d
           {{- end }}
+          {{- if .Values.persistentApps.enabled }}
+          - name: apps
+            mountPath: {{ .Values.persistentApps.mountPath }}
+          {{- end }}
+          {{- if .Values.persistentEnv.enabled }}
+          - name: env
+            mountPath: {{ .Values.persistentEnv.mountPath }}
+          {{- end }}
       volumes:
         - name: sites-dir
           {{- if .Values.persistence.worker.enabled }}
@@ -95,6 +103,24 @@ spec:
         - name: nginx-config
           configMap:
             name: {{ include "erpnext.fullname" . }}-nginx-config
+        {{- end }}
+        {{- if .Values.persistentApps.enabled }}
+        - name: apps
+          persistentVolumeClaim:
+            {{- if .Values.persistentApps.existingClaim }}
+            claimName: {{ .Values.persistentApps.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}-apps
+            {{- end }}
+        {{- end }}
+        {{- if .Values.persistentEnv.enabled }}
+        - name: env
+          persistentVolumeClaim:
+            {{- if .Values.persistentEnv.existingClaim }}
+            claimName: {{ .Values.persistentEnv.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}-env
+            {{- end }}
         {{- end }}
       {{- with .Values.nginx.nodeSelector }}
       nodeSelector:
