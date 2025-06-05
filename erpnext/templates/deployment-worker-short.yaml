@@ -65,6 +65,10 @@ spec:
           - name: apps
             mountPath: {{ .Values.persistentApps.mountPath }}
           {{- end }}
+          {{- if .Values.persistentEnv.enabled }}
+          - name: env
+            mountPath: {{ .Values.persistentEnv.mountPath }}
+          {{- end }}
       {{- if .Values.worker.short.sidecars }}
         {{- toYaml .Values.worker.short.sidecars | nindent 8 }}
       {{- end }}
@@ -100,6 +104,15 @@ spec:
             claimName: {{ .Values.persistentApps.existingClaim }}
             {{- else }}
             claimName: {{ template "erpnext.fullname" . }}-apps
+            {{- end }}
+        {{- end }}
+        {{- if .Values.persistentEnv.enabled }}
+        - name: env
+          persistentVolumeClaim:
+            {{- if .Values.persistentEnv.existingClaim }}
+            claimName: {{ .Values.persistentEnv.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}-env
             {{- end }}
         {{- end }}
       {{- with .Values.worker.short.nodeSelector }}

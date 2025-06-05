@@ -48,6 +48,10 @@ spec:
           - name: apps
             mountPath: {{ .Values.persistentApps.mountPath }}
           {{- end }}
+          {{- if .Values.persistentEnv.enabled }}
+          - name: env
+            mountPath: {{ .Values.persistentEnv.mountPath }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.worker.gunicorn.service.port }}
@@ -93,6 +97,15 @@ spec:
             claimName: {{ .Values.persistentApps.existingClaim }}
             {{- else }}
             claimName: {{ template "erpnext.fullname" . }}-apps
+            {{- end }}
+        {{- end }}
+        {{- if .Values.persistentEnv.enabled }}
+        - name: env
+          persistentVolumeClaim:
+            {{- if .Values.persistentEnv.existingClaim }}
+            claimName: {{ .Values.persistentEnv.existingClaim }}
+            {{- else }}
+            claimName: {{ template "erpnext.fullname" . }}-env
             {{- end }}
         {{- end }}
       {{- with .Values.worker.gunicorn.nodeSelector }}
