@@ -17,17 +17,18 @@ spec:
           command: ["/bin/bash", "-c"]
           args:
             - |
-              set -e
-              echo "Checking apps volume..."
-              if [ ! -d /mnt/apps/frappe ]; then
-                echo "Copying apps to /mnt/apps"
-                cp -r /home/frappe/frappe-bench/apps/* /mnt/apps/
-                cp -r /home/frappe/frappe-bench/env/* /mnt/env/
-                echo -e "frappe\nerpnext" > /mnt/apps/apps.txt
-                echo "App volume initialized."
-              else
-                echo "App volume already initialized. Skipping copy."
-              fi
+               set -e
+               echo "Checking apps and env volumes..."
+               if [ ! -d /mnt/apps/frappe ] || [ ! -x /mnt/env/bin/python ]; then
+                 echo "Copying apps to /mnt/apps"
+                 cp -a /home/frappe/frappe-bench/apps/. /mnt/apps/
+                 echo "Copying env to /mnt/env"
+                 cp -a /home/frappe/frappe-bench/env/. /mnt/env/
+                 echo -e "frappe\nerpnext" > /mnt/apps/apps.txt
+                 echo "App and env volumes initialized."
+                else
+                 echo "App and env volumes already initialized. Skipping copy."
+                fi
           volumeMounts:
             - name: apps
               mountPath: /mnt/apps
