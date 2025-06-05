@@ -31,7 +31,6 @@ spec:
           volumeMounts:
             - name: apps
               mountPath: /mnt/apps
-          volumeMounts:
             - name: env
               mountPath: /mnt/env
           securityContext:
